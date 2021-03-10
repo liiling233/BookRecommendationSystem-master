@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="static/css/styles.css"/>
+    <link rel="stylesheet" href="static/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="static/font-awesome-4.7.0/css/font-awesome.min.css"/>
+    <script src="static/bootstrap/dist/js/jquery-1.11.3.min.js"></script>
+    <script src="static/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="static/Flat-UI/dist/js/flat-ui.min.js"></script>
+
+    <title>基于大数据图书分析系统</title>
+    <style>
+        .row {
+            margin-top: 10px;;
+        }
+
+        p {
+            white-space: nowrap;
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        h2{
+            color: #1abc9c;
+        }
+        input{
+
+        }
+        .center {
+            text-align: center;
+        }
+
+        .pagination {
+            background: #cccccc;
+        }
+        #box{
+		width:100%;
+		height:300px;
+		border:1px solid black;
+		position:relative;
+		overflow:hidden;
+	}
+	.slide{
+		width:100%;
+		height:300px;
+		position:absolute;
+	}
+     .d3 {background: #F9F0DA;}
+.d3 form {
+    width: 100%;
+  background: #A3D0C3;
+}
+.d3 input, .d3 button {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+.d3 input {
+  width: 100%;
+  height: 42px;
+  padding-left: 15px;
+}
+.d3 button {
+  height: 42px;
+  width: 42px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  cursor: pointer;
+}
+.d3 button:before {
+  content: "\f002";
+  font-family: FontAwesome;
+  font-size: 16px;
+  color: #F9F0DA;
+}
+        .titles{
+             text-align: center;
+        }
+    </style>
+    <script>
+        $(function () {
+            $('#myTabs a').click(function (e) {
+                $(this).tab('show')
+            });
+        })
+    </script>
+    <script type="text/javascript">
+	onload=function(){
+		var arr = document.getElementsByClassName("slide");
+		for(var i=0;i<arr.length;i++){
+			arr[i].style.left = i*1020+"px";
+		}
+	}
+	function LeftMove(){
+		var arr = document.getElementsByClassName("slide");//获取三个子div
+		for(var i=0;i<arr.length;i++){
+			var left = parseFloat(arr[i].style.left);
+			left-=1;
+			var width = 1020;//图片的宽度
+			if(left<=-width){
+				left=(arr.length-1)*width;//当图片完全走出显示框，拼接到末尾
+				clearInterval(moveId);
+			}
+			arr[i].style.left = left+"px";
+		}
+	}
+	function divInterval(){
+		moveId=setInterval(LeftMove,10);//设置一个10毫秒定时器
+	}
+
+
+	timeId=setInterval(divInterval,3000);//设置一个3秒的定时器。
+
+	function stop(){
+		clearInterval(timeId);
+	}
+	function start(){
+		clearInterval(timeId);
+		timeId=setInterval(divInterval,3000);
+	}
+
+	//页面失去焦点停止
+	onblur = function(){
+		stop();
+	}
+	//页面获取焦点时开始
+	onfocus = function(){
+		start();
+	}
+</script>
+
+</head>
+<body>
+<!-- Static navbar -->
+<div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only"></span>
+            </button>
+            <a class="navbar-brand" href="/">基于大数据图书分析系统</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/">首页</a></li>
+                <li><a href="/historical">历史评分</a></li>
+                <li><a href="/user">个人中心</a></li>
+            </ul>
+            {% if not login %}
+                <ul class="nav navbar-nav navbar-right hidden-sm">
+                    <li><a href="/loginForm">登录</a></li>
+                    <li><a href="/registerationForm">注册</a></li>
+                    <li>
+                        <a href="/order"><span class="glyphicon glyphicon-shopping-cart">书单</span></a></li>
+                </ul>
+            {% else %}
+                <ul class="nav navbar-nav navbar-right hidden-sm">
+                    <li><a>{{ useid }}</a></li>
+                    <li><a href="/logout">注销</a></li>
+                    <li>
+                        <a href="/order"><span class="glyphicon glyphicon-shopping-cart">书单</span></a></li>
+                </ul>
+            {% endif %}
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+<!--content-->
+<div class="container">
+    <div class="jumbotron">
+
+    <div id="box" onmouseover="stop()" onmouseout="start()">
+		<div class="slide"><img src="static/img/1.jpg" width="100%" height="300"/></div>
+		<div class="slide"><img src="static/img/2.jpg" width="100%" height="300"/></div>
+		<div class="slide"><img src="static/img/3.jpg" width="100%" height="300"/></div>
+        <div class="slide"><img src="static/img/4.jpg" width="100%" height="300"/></div>
+	</div>
+    <div class="titles"> <h2>Search Engine for Book</h2></div>
+
+    <div class="d3">
+            <form action="/search" method="GET">
+                <p>
+                    {% if key %}
+                        <input type="text" name="keyword" value="{{ key }}">
+                    {% else %}
+                        <input type="text" name="keyword">
+                    {% endif %}
+                    <button type="submit"></button>
+                </p>
+            </form>
+        </div>
+    </div>
+
+
+    <ul class="nav nav-tabs" id="myTabs">
+        <li><a href='/'>热门书籍</a></li>
+        <li><a href='/guess'>猜你喜欢</a></li>
+        <li><a href='/recommend'>推荐书籍1</a></li>
+        <li><a href='/recommend2'>推荐书籍2</a></li>
+    </ul>
+    <div class="row">
+        {% if not books %}
+            {% if login %}
+                <p><a href="/loginForm" class="btn btn-primary btn-block" role="button">你未对书籍进行评分，无法获得推荐数据</a></p>
+
+            {% else %}
+                <p><a href="/loginForm" class="btn btn-primary btn-block" role="button">请登录后查看</a></p>
+            {% endif %}
+        {% else %}
+            {% for book in books %}
+                <div class="col-sm-4 col-md-3">
+                    <div class="thumbnail">
+                        <a href="/bookinfo?bookid={{ book[2] }}">
+                            <img style="width: 100%; height: 200px; display: block;" alt="100%x200" src="{{ book[3] }}">
+                        </a>
+                        <div class="caption center">
+                            <p>{{ book[0] }}</p>
+                            {% if name=="recommend" %}
+                            <p><span>推荐分:</span><span>{{ book[4] }}</span></p>
+                            {% else %}
+                            <p><span>作者:</span><span>{{ book[1] }}</span></p>
+                            {% endif %}
+                            <p><a href="/bookinfo?bookid={{ book[2] }}" bookid="{{ book[2] }}"
+                                  class="btn btn-primary btn-block" role="button">查看详情</a></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
